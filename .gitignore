@@ -13,6 +13,7 @@ dataflow/target/*
 # Temporary files.
 .*~
 *~
+#*
 
 # Ignore files from merges.
 *.orig
