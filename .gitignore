@@ -1,0 +1,22 @@
+# Ignore compiled files
+*.class
+
+# Ignore private files.
+.*
+
+# Miscellaneous files
+nbactions.xml
+
+# Ignore build files
+dataflow/target/*
+
+# Temporary files.
+.*~
+*~
+
+# Ignore files from merges.
+*.orig
+
+#=======
+#Ignore any log files
+*.log
