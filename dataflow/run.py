@@ -24,7 +24,7 @@ input_path = "{bucket}/tmp/union_test/inputs/*.avro".format(bucket=bucket)
 output_path ="{bucket}/tmp/union_test/outputs/merged".format(bucket=bucket)
 staging_path = "{bucket}/tmp/union_test/staging".format(bucket=bucket)
 
-main_class = "dataflow.App"
+main_class = "dataflow.UnionExample"
 
 def GetFlags():
   flags = {

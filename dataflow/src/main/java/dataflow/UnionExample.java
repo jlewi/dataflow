@@ -36,7 +36,7 @@ import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
  * <p> The input file defaults to gs://dataflow-samples/shakespeare/kinglear.txt and can be
  * overridden with --input.
  */
-public class App {
+public class UnionExample {
   /**
    * Options supported by {@link WordCount}.
    * <p>
