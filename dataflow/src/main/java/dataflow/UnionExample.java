@@ -3,8 +3,10 @@ package dataflow;
 import java.util.ArrayList;
 
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
 
 import com.google.cloud.dataflow.sdk.Pipeline;
+import com.google.cloud.dataflow.sdk.coders.AvroCoder;
 import com.google.cloud.dataflow.sdk.io.AvroIO;
 import com.google.cloud.dataflow.sdk.options.DataflowPipelineOptions;
 import com.google.cloud.dataflow.sdk.options.Default;
@@ -12,7 +14,10 @@ import com.google.cloud.dataflow.sdk.options.DefaultValueFactory;
 import com.google.cloud.dataflow.sdk.options.Description;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
+import com.google.cloud.dataflow.sdk.transforms.DoFn;
+import com.google.cloud.dataflow.sdk.transforms.ParDo;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
+import com.google.cloud.dataflow.sdk.values.PCollection;
 
 /**
  * An example that counts words in Shakespeare. For a detailed walkthrough of this
@@ -78,6 +83,33 @@ public class UnionExample {
     void setNumShards(int value);
   }
 
+  /** A DoFn that converts records. */
+  static class ConvertRecordsFn extends DoFn<GenericRecord, LeftAndRight> {
+    @Override
+    public void processElement(ProcessContext c) {
+      LeftAndRight leftAndRight = new LeftAndRight();
+      leftAndRight.setRight(new Right());
+      leftAndRight.setLeft(new Left());
+      leftAndRight.getLeft().setLeftValue(-1);
+      leftAndRight.getRight().setRightValue(-1);
+
+      GenericRecord r = c.element();
+      String schemeName = r.getSchema().getFullName();
+      if (schemeName.equals("dataflow.Left")) {
+        leftAndRight.getLeft().setLeftValue((Integer) r.get("left_value"));
+        System.out.println("Output left");
+        c.output(leftAndRight);
+      }
+      if (schemeName.equals("dataflow.Right")) {
+
+        leftAndRight.getRight().setRightValue((Integer) r.get("right_value"));
+        System.out.println("Output right");
+        c.output(leftAndRight);
+      }
+      System.out.println("Schema:" +schemeName);
+    }
+  }
+
   public static void main(String[] args) {
     Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
     Pipeline p = Pipeline.create(options);
@@ -87,11 +119,13 @@ public class UnionExample {
     schemas.add(Right.SCHEMA$);
     Schema unionSchema = Schema.createUnion(schemas);
 
-    p.apply(AvroIO.Read.named("Read").from(options.getInput()).withSchema(unionSchema))
+    PCollection<GenericRecord> inputs = p.apply(AvroIO.Read.named("Read").from(options.getInput()).withSchema(unionSchema));
+
+    inputs.apply(ParDo.of(new ConvertRecordsFn())).setCoder(AvroCoder.of(LeftAndRight.class))
     .apply(AvroIO.Write.named("Write")
         .to(options.getOutput())
         .withNumShards(options.getNumShards())
-        .withSchema(unionSchema));
+        .withSchema(LeftAndRight.class));
     p.run();
   }
 }
