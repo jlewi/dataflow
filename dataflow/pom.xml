@@ -10,8 +10,8 @@
   <name>dataflow</name>
   <url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <properties>    
+    <avro-version>1.7.3</avro-version>
   </properties>
 
   <dependencies>
@@ -27,7 +27,11 @@
       <artifactId>google-cloud-dataflow-java-sdk-all</artifactId>
       <version>[0.3.141216,)</version>
     </dependency>
-    <!-- -->
+    <dependency>
+      <groupId>org.apache.avro</groupId>
+      <artifactId>avro</artifactId>
+      <version>${avro-version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -44,6 +48,28 @@
          </instructions>
        </configuration>
      </plugin>
+     <!--use the maven plugin for avro to generate the sources from the protocols -->
+      <plugin>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro-maven-plugin</artifactId>
+        <version>${avro-version}</version>
+        <executions>
+          <execution>
+            <id>schemas</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>idl-protocol</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>*.avdl</include>
+              </includes>
+              <sourceDirectory>${project.basedir}/share/schemas/dataflow/</sourceDirectory>
+              <outputDirectory>${project.build.directory}/generated-sources/java</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
    </plugins>
   </build>
 </project>

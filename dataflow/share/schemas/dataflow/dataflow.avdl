@@ -1,0 +1,7 @@
+protocol DataflowProtocol {	
+  // The import statements must be ordered topologically with respect to 
+  // dependencies. i.e. a schema should only appear after all its dependencies.
+  import schema "left.avsc";
+  import schema "right.avsc";
+  import schema "left_and_right.avsc";
+}

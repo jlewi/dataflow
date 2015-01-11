@@ -1,0 +1,7 @@
+{"name": "dataflow.LeftAndRight",
+ "type":  "record",
+ "fields":[
+	{"name": "left", "type":"dataflow.Left"},
+	{"name": "right", "type":"dataflow.Right"}
+  ]
+}

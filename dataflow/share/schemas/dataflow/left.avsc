@@ -1,0 +1,6 @@
+{"name": "dataflow.Left",
+ "type":  "record",
+ "fields":[
+	{"name": "left_value", "type":"int"}	
+  ]
+}
