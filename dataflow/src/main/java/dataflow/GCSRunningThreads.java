@@ -18,11 +18,13 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.cloud.dataflow.sdk.options.Description;
+import com.google.cloud.dataflow.sdk.options.GcsOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.util.GcsUtil;
@@ -31,7 +33,8 @@ import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 
 /**
  * A small example to reproduce the issue with GCS threads still running after we close
- * the channel.
+ * the channel. To fix that issue we need to shutdown the executor service used
+ * by GCSUtil.
  */
 public class GCSRunningThreads {
   private static final Logger sLogger = LoggerFactory.getLogger(
@@ -67,5 +70,12 @@ public class GCSRunningThreads {
     sLogger.info("Done with write");
     outChannel.close();
     sLogger.info("Done with close");
+    GcsOptions gcsOptions = options.as(GcsOptions.class);
+    gcsOptions.getExecutorService().shutdown();
+    try {
+      gcsOptions.getExecutorService().awaitTermination(3, TimeUnit.MINUTES);
+    } catch (InterruptedException e) {
+      sLogger.error("Thread was interrupted waiting for execution service to shutdown.");
+    }
   }
 }

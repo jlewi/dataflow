@@ -19,14 +19,21 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.cloud.dataflow.sdk.options.Description;
+import com.google.cloud.dataflow.sdk.options.GcsOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptions;
 import com.google.cloud.dataflow.sdk.options.PipelineOptionsFactory;
 import com.google.cloud.dataflow.sdk.util.GcsUtil;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
 
 public class CreateSampleAvroFiles {
+  private static final Logger sLogger = LoggerFactory.getLogger(
+      CreateSampleAvroFiles.class);
   /**
    * Options supported by {@link WordCount}.
    * <p>
@@ -74,5 +81,14 @@ public class CreateSampleAvroFiles {
     WritableByteChannel rightChannel = gcsUtil.create(gcsRightOutputPath, "avro/binary");
     OutputStream rightStream = Channels.newOutputStream(rightChannel);
     AvroFileUtil.writeRecords(rightStream, rights, Right.SCHEMA$);
+
+    sLogger.info("Done with close");
+    GcsOptions gcsOptions = options.as(GcsOptions.class);
+    gcsOptions.getExecutorService().shutdown();
+    try {
+      gcsOptions.getExecutorService().awaitTermination(3, TimeUnit.MINUTES);
+    } catch (InterruptedException e) {
+      sLogger.error("Thread was interrupted waiting for execution service to shutdown.");
+    }
   }
 }
