@@ -16,7 +16,11 @@ package dataflow;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Type;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.reflect.ReflectData;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.cloud.dataflow.sdk.coders.AvroCoder;
 
 /**
@@ -26,8 +30,33 @@ import com.google.cloud.dataflow.sdk.coders.AvroCoder;
  * This coder allows deterministic schemas to be used as keys in Dataflow.
  */
 public class AvroDeterministicCoder<T> extends AvroCoder<T>{
+  /**
+   * Returns an {@code AvroCoder} instance for the provided element type.
+   * @param <T> the element type
+   */
+  public static <T> AvroDeterministicCoder<T> of(Class<T> type) {
+    return new AvroDeterministicCoder<>(type, ReflectData.get().getSchema(type));
+  }
+
+  /**
+   * Returns an {@code AvroDeterministicCoder} instance for the Avro schema. The implicit
+   * type is GenericRecord.
+   */
+  public static AvroDeterministicCoder<GenericRecord> of(Schema schema) {
+    return new AvroDeterministicCoder<>(GenericRecord.class, schema);
+  }
+
   protected AvroDeterministicCoder(Class<T> type, Schema schema) {
     super(type, schema);
+  }
+
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  @JsonCreator
+  public static AvroDeterministicCoder<?> of(
+      @JsonProperty("type") String classType,
+      @JsonProperty("schema") String schema) throws ClassNotFoundException {
+    Schema.Parser parser = new Schema.Parser();
+    return new AvroDeterministicCoder(Class.forName(classType), parser.parse(schema));
   }
 
   /**
