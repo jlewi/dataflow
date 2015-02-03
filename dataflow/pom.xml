@@ -58,16 +58,25 @@
             <showDeprecation>true</showDeprecation>
           </configuration>
        </plugin>
-      <!-- A plugin for building bundled jars. -->
+      <!-- A plugin for building bundled jars. 
+           This doesn't appear to work because the spotify client requires
+           jars which need to be signed. If you set inline false you can build
+           a jar which contains the other jars. If you unpack that jar and
+           it to the classpath it seems to work.
+           
+           If you manually modify the bundled jar to remove the META-INF/BCKEY.*
+           then repackage it, you will get a working jar.
+        -->
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <version>2.4.0</version>
         <extensions>true</extensions>
-        <configuration>
+        <configuration>          
           <instructions>
            <!-- Embed all dependencies -->
-           <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+           <Embed-Transitive>true</Embed-Transitive> 
+           <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
          </instructions>
        </configuration>
      </plugin>
