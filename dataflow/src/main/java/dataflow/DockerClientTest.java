@@ -12,7 +12,6 @@ import com.spotify.docker.client.messages.Container;
  */
 public class DockerClientTest {
   public static void main(String[] args) throws Exception {
-    // Docker must be using a tcp port to work with the spotify client.
     String dockerAddress = "unix:///var/run/docker.sock";
     DockerClient docker = new DefaultDockerClient(dockerAddress);
 
