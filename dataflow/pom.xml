@@ -7,8 +7,8 @@
   <packaging>jar</packaging>
   <name>dataflow</name>
   <url>http://maven.apache.org</url>
-  <properties>
-    <avro-version>1.7.3</avro-version>
+  <properties>    
+    <avro-version>[1.7.7,)</avro-version>
   </properties>
   <dependencies>
     <dependency>
@@ -27,7 +27,9 @@
     <dependency>
       <groupId>com.google.cloud.dataflow</groupId>
       <artifactId>google-cloud-dataflow-java-sdk-all</artifactId>
-      <version>[0.3.141216,)</version>
+      <!--Using manual uses the manually installed SDK that we built from github-->
+      <version>manual_build</version>
+      <!--<version>[0.3.141216,)</version>-->
     </dependency>
     <dependency>
       <groupId>org.apache.avro</groupId>
