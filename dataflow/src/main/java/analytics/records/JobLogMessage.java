@@ -1,4 +1,4 @@
-package analytics;
+package analytics.records;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,6 +36,9 @@ public class JobLogMessage {
 
   @Nullable
   public String workflowStatus;
+
+  @Nullable
+  public String createWorkflowJobRequest;
 
   @Override
   public boolean equals(Object obj) {

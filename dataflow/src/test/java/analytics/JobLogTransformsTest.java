@@ -14,6 +14,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.matchers.JUnitMatchers;
 
+import analytics.records.JobLogMessage;
+
 import com.google.cloud.dataflow.sdk.transforms.DoFnTester;
 
 public class JobLogTransformsTest {
