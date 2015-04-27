@@ -8,7 +8,7 @@
   <name>dataflow</name>
   <url>http://maven.apache.org</url>
   <properties>    
-    <avro-version>[1.7.7,)</avro-version>
+    <avro-version>1.7.7</avro-version>
   </properties>
   <dependencies>
     <dependency>
@@ -28,6 +28,7 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.1</version>
+    </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
