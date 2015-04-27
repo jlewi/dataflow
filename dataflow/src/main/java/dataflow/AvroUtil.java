@@ -16,7 +16,6 @@ package dataflow;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.avro.io.DatumReader;
@@ -25,7 +24,6 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.io.JsonDecoder;
 import org.apache.avro.io.JsonEncoder;
-import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.avro.specific.SpecificRecordBase;
@@ -33,10 +31,6 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.cloud.dataflow.sdk.coders.AvroCoder;
-import com.google.cloud.dataflow.sdk.coders.Coder;
-import com.google.cloud.dataflow.sdk.coders.CoderRegistry;
 
 /**
  * This class provides various utilities such as routines for encoding AvroRecords as json. This
@@ -47,29 +41,29 @@ public class AvroUtil {
   private static final Logger sLogger = LoggerFactory.getLogger(
       AvroUtil.class);
 
-  // Coder Factory allows us to register coders as defaults.
-  public static class CoderFactory extends CoderRegistry.CoderFactory {
-    private final Class type;
-
-    public CoderFactory(Class type) {
-      this.type = type;
-    }
-
-    @Override
-    public Coder<?> create(List<? extends Coder<?>> typeArgumentCoders) {
-      Schema schema = ReflectData.get().getSchema(type);
-      if (AvroDeterministicCoder.isDeterministic(schema)) {
-        return AvroDeterministicCoder.of(type);
-      } else {
-        return AvroCoder.of(type);
-      }
-    }
-
-    @Override
-    public List<Object> getInstanceComponents(Object value) {
-      return null;
-    }
-  }
+//  // Coder Factory allows us to register coders as defaults.
+//  public static class CoderFactory extends CoderRegistry.CoderFactory {
+//    private final Class type;
+//
+//    public CoderFactory(Class type) {
+//      this.type = type;
+//    }
+//
+//    @Override
+//    public Coder<?> create(List<? extends Coder<?>> typeArgumentCoders) {
+//      Schema schema = ReflectData.get().getSchema(type);
+//      if (AvroDeterministicCoder.isDeterministic(schema)) {
+//        return AvroDeterministicCoder.of(type);
+//      } else {
+//        return AvroCoder.of(type);
+//      }
+//    }
+//
+//    @Override
+//    public List<Object> getInstanceComponents(Object value) {
+//      return null;
+//    }
+//  }
 
   /**
    * Return the json representation of an avro record.
