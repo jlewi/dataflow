@@ -57,6 +57,7 @@ public class PrettyPrintAvro {
     void setOutput(String value);
   }
 
+  // TODO(jeremy@lewi.us): Use AvroFileUtil.readFileToPrettyJson.
   /**
    * Read the specified file and pretty print it to outstream.
    * @param inputFile

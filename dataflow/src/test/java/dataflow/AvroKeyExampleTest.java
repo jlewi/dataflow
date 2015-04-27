@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import com.google.cloud.dataflow.sdk.Pipeline;
+import com.google.cloud.dataflow.sdk.testing.DataflowAssert;
 import com.google.cloud.dataflow.sdk.testing.TestPipeline;
 import com.google.cloud.dataflow.sdk.transforms.Create;
 import com.google.cloud.dataflow.sdk.values.PCollection;
@@ -34,7 +35,7 @@ public class AvroKeyExampleTest {
     expectedElements.add(expected);
 
     // You can use DataflowAssert to check the output matches the expected output.
-    // DataflowAssert.that(outputs).containsInAnyOrder(expectedElements);
+    DataflowAssert.that(outputs).containsInAnyOrder(expectedElements);
 
     // Run the pipeline.
     p.run();
