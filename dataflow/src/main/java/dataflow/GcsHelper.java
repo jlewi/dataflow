@@ -63,6 +63,9 @@ public class GcsHelper {
 
   /**
    * Copy the local file to the specified GCSPath.
+   *
+   * If the destination GCSPath already exists it will be overwritten.
+   *
    * @param localFile
    * @param gcsPath the type of object, eg "text/plain".
    */
