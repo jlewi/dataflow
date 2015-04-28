@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package contrail.dataflow;
+package dataflow.docker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.HostConfig;
 
 /**
  * Build a proccess to run in a shell process.
@@ -79,18 +80,33 @@ public class DockerProcessBuilder {
     this.imageName = imageName;
   }
 
-  public DockerProcess start() throws IOException, DockerException, InterruptedException {
+  // TODO(jeremy@lewi.us): Should we return DockerProcess and let the
+  // caller start the container and handle the logging?
+  public void start() throws IOException, DockerException, InterruptedException {
+    // Fetch the image if its in a repository.
+    // TODO(jeremy@lewi.us): We need to check whether the image is in GCR
+    // by checking the prefix of the imageName and if it is we need to use
+    // the gcloud tool to pull it.
+    // docker.pull(imageName);
+
+    List<String> volumeArguments = new ArrayList<String>();
+    for (VolumeMapping mapping : volumeMappings) {
+      volumeArguments.add(mapping.toArgument());
+    }
+
     ContainerConfig config = ContainerConfig.builder()
         .image(imageName)
         .cmd(command)
-        .attachStderr(true)
+        .attachStdout(true)
         .attachStderr(true)
         .build();
 
     ContainerCreation creation = docker.createContainer(config);
     String id = creation.id();
     ContainerInfo info = docker.inspectContainer(id);
-    docker.startContainer(id);
+
+    HostConfig hostConfig = HostConfig.builder().binds(volumeArguments).build();
+    docker.startContainer(id, hostConfig);
     docker.waitContainer(id);
 
     LogStream stdOut = docker.logs(id, LogsParameter.STDOUT);
@@ -100,7 +116,5 @@ public class DockerProcessBuilder {
 
     // Remove the container.
     docker.removeContainer(id);
-
-    return null;
   }
 }

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package contrail.dataflow;
+package dataflow.docker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +30,8 @@ import org.slf4j.Logger;
 // TODO(jlewi): Do we need to delete the docker container after the process
 // finishes.
 //
-//
+// TODO(jeremy@lewi.us): This class is currently useless because
+// DockerProcessBuilder returns null.
 public class DockerProcess {
   private final Process process;
   private final String containerName;
