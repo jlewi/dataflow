@@ -13,10 +13,12 @@
  */
 package dataflow;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import com.google.cloud.dataflow.sdk.util.GcsUtil;
 import com.google.cloud.dataflow.sdk.util.gcsfs.GcsPath;
@@ -38,7 +40,6 @@ public class GcsHelper {
   public void copyToLocalFile(GcsPath gcsPath, String localFile)
       throws IOException {
     SeekableByteChannel byteChannel = gcsUtil.open(gcsPath);
-
     FileOutputStream outStream = new FileOutputStream(localFile);
     // Allocate a 32Kb buffer.
     int capacity = 2 << 14;
@@ -58,6 +59,38 @@ public class GcsHelper {
 
     outStream.close();
     byteChannel.close();
+  }
 
+  /**
+   * Copy the local file to the specified GCSPath.
+   * @param localFile
+   * @param gcsPath the type of object, eg "text/plain".
+   */
+  public void copyLocalFileToGcs(String localFile, GcsPath gcsPath, String type)
+      throws IOException {
+    WritableByteChannel byteChannel = gcsUtil.create(gcsPath, type);
+    FileInputStream inStream = new FileInputStream(localFile);
+
+    // Allocate a 32Kb buffer.
+    int capacity = 2 << 14;
+    //byte[] buffer = new byte
+    //long size = byteChannel.size();
+    ByteBuffer buffer = ByteBuffer.allocate(capacity);
+    if (!buffer.hasArray()) {
+      // This should not happen.
+      throw new RuntimeException("ByteBuffer is not backed by an array.");
+    }
+    while (true) {
+      buffer.clear();
+      int read = inStream.read(buffer.array());
+      if (read <= 0) {
+        break;
+      }
+      buffer.limit(read);
+      byteChannel.write(buffer);
+    }
+
+    inStream.close();
+    byteChannel.close();
   }
 }
