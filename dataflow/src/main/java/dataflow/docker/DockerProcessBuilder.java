@@ -28,6 +28,8 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 
+import dataflow.util.GCloudWrapper;
+
 /**
  * Build a proccess to run in a shell process.
  */
@@ -38,6 +40,8 @@ public class DockerProcessBuilder {
 
   private final List<VolumeMapping> volumeMappings;
   private final DockerClient docker;
+
+  private GCloudWrapper gcloudWrapper;
 
   // Information about how to map a local file system path to a path in
   // the docker filesystem.
@@ -63,6 +67,7 @@ public class DockerProcessBuilder {
     this.command = command;
     volumeMappings = new ArrayList<VolumeMapping>();
     this.docker = docker;
+    gcloudWrapper = new GCloudWrapper();
   }
 
   /**
@@ -87,7 +92,11 @@ public class DockerProcessBuilder {
     // TODO(jeremy@lewi.us): We need to check whether the image is in GCR
     // by checking the prefix of the imageName and if it is we need to use
     // the gcloud tool to pull it.
-    // docker.pull(imageName);
+    if (imageName.startsWith("gcr.io")) {
+      gcloudWrapper.pullDockerImage(imageName);
+    } else {
+      docker.pull(imageName);
+    }
 
     List<String> volumeArguments = new ArrayList<String>();
     for (VolumeMapping mapping : volumeMappings) {
