@@ -40,8 +40,7 @@
       <groupId>com.google.cloud.dataflow</groupId>
       <artifactId>google-cloud-dataflow-java-sdk-all</artifactId>
       <!--Using manual uses the manually installed SDK that we built from github-->
-      <version>manual_build</version>
-      <!--<version>[0.3.141216,)</version>-->
+      <version>[0.3.141216,)</version>
     </dependency>
     <dependency>
       <groupId>org.apache.avro</groupId>
