@@ -90,7 +90,7 @@ public class SlidingWindowExample {
         Instant instant = new Instant(p.timeStamp);
       }
 
-      BoundedWindow boundedWindow = c.windows().iterator().next();
+      BoundedWindow boundedWindow = c.window();
       window.maxTimeStamp = boundedWindow.maxTimestamp().getMillis();
       c.output(window);
     }

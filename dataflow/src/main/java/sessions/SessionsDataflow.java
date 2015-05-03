@@ -92,9 +92,9 @@ public class SessionsDataflow {
         return;
       }
 
-      System.out.println(String.format("Number of windows: %d", c.windows().size()));
-      BoundedWindow window = c.windows().iterator().next();
-      System.out.println(String.format("Max timestamp: %s", window.maxTimestamp().toString()));
+      BoundedWindow window = c.window();
+      System.out.println(String.format(
+          "Max timestamp: %s", window.maxTimestamp().toString()));
       c.output(session);
     }
   }
