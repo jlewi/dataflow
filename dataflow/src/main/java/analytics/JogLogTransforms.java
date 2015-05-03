@@ -96,11 +96,13 @@ public class JogLogTransforms {
     }
 
     @Override
-    public void addInput(String key, WorkflowStatus accumulator, WorkflowStatus value) {
+    public WorkflowStatus addInput(
+        String key, WorkflowStatus accumulator, WorkflowStatus value) {
       if (accumulator.timestampMs < value.timestampMs) {
         accumulator.timestampMs = value.timestampMs;
         accumulator.status = value.status;
       }
+      return accumulator;
     }
 
     @Override
@@ -156,11 +158,12 @@ public class JogLogTransforms {
     }
 
     @Override
-    public void addInput(String key, JobStatus accumulator, JobStatus value) {
+    public JobStatus addInput(String key, JobStatus accumulator, JobStatus value) {
       if (accumulator.timestampMs < value.timestampMs) {
         accumulator.timestampMs = value.timestampMs;
         accumulator.status = value.status;
       }
+      return accumulator;
     }
 
     @Override
